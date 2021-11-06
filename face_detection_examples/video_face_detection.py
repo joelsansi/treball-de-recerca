@@ -5,21 +5,21 @@ import imutils
 import time
 import cv2
 
-# construct the argument parse and parse the arguments
+# arguments 
 args = {'prototxt': 'deploy.prototxt.txt',
  'model': 'res10_300x300_ssd_iter_140000.caffemodel',
   'confidence': 0.5}
 
-# load our serialized model from disk
+# load model from disk
 print("[INFO] carregant model ...")
 net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 
-# initialize the video and allow camera sensor to warmup
+# initialize video 
 print("[INFO] iniciant càmera ...")
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
-# loop over the frames from the video stream
+# loop over the frames from the video
 while True:
 	# grab the frame from the threaded video stream and resize it
 	# to have a maximum width of 400 pixels
@@ -65,10 +65,10 @@ while True:
 	cv2.imshow("Camera", frame)
 	key = cv2.waitKey(1) & 0xFF
  
-	# if the `q` key was pressed, break from the loop
+	# end the program when press q
 	if key == ord("q"):
 		break
 
-# do a bit of cleanup
+# clean all the windows
 cv2.destroyAllWindows()
 vs.stop()
