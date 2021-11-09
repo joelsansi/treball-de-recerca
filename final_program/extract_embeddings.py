@@ -98,8 +98,10 @@ for (i, imagePath) in enumerate(imagePaths):
 			total += 1
 
 # dump the facial embeddings + names to disk
-print("[INFO] ordenant {} embeddings...".format(total))
+print("""[INFO] "serializing" {} embeddings ...""".format(total))
 data = {"embeddings": knownEmbeddings, "names": knownNames}
 f = open(args["embeddings"], "wb")
 f.write(pickle.dumps(data))
 f.close()
+
+print("[INFO] serialized 😎")
