@@ -57,33 +57,33 @@ args = {'detector': 'face_detection_model',
 'le': 'output/le.pickle',
 'confidence': 0.5}
 
-# load our serialized face detector from disk
-print("[INFO] loading face detector...")
+# load face detector from disk
+print("[INFO] carregant detector facial ...")
 protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
 modelPath = os.path.sep.join([args["detector"],
 	"res10_300x300_ssd_iter_140000.caffemodel"])
 detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 
-# load our serialized face embedding model from disk
-print("[INFO] loading face recognizer...")
+# load face embedding model from disk
+print("[INFO] carregant reconeixedor facial ...")
 embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
 
-# load the actual face recognition model along with the label encoder
+# load custom face recognition model and label encoder
 recognizer = pickle.loads(open(args["recognizer"], "rb").read())
 le = pickle.loads(open(args["le"], "rb").read())
 
-# initialize the video stream, then allow the camera sensor to warm up
-print("[INFO] starting video stream...")
+# initialize the video 
+print("[INFO] iniciant video ...")
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
-# start the FPS throughput estimator
+# start the FPS counter
 fps = FPS().start()
 
 # loop over frames from the video file stream
 
 while True:
-	# grab the frame from the threaded video stream
+	# grab a frame from the video
 	frame = vs.read()
 
 	# resize the frame to have a width of 720 pixels (while
@@ -123,9 +123,7 @@ while True:
 			if fW < 20 or fH < 20:
 				continue
 
-			# construct a blob for the face ROI, then pass the blob
-			# through our face embedding model to obtain the 128-d
-			# quantification of the face
+			# construct blob from image, 
 			faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255,
 				(96, 96), (0, 0, 0), swapRB=True, crop=False)
 			embedder.setInput(faceBlob)
@@ -137,8 +135,7 @@ while True:
 			proba = preds[j]
 			name = le.classes_[j]
 
-			# draw the bounding box of the face along with the
-			# associated probability
+			# draw bounding box and face probability
 			text = "{}: {:.2f}%".format(name, proba * 100)
 			y = startY - 10 if startY - 10 > 10 else startY + 10
 			cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 0, 255), 2)
@@ -214,21 +211,17 @@ while True:
 	cv2.imshow("Reconeixedor facial", frame)
 	key = cv2.waitKey(1) & 0xFF
 
-	# if the `q` key was pressed, break from the loop
+	# if "q" is pressed, exit program
 	if key == ord("q"):
 		s.send("exit".encode())
 		s.close()
 		break
 
-# stop the timer and display FPS information
+# display time and FPS info
 fps.stop()
-print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+print("[INFO] temps transcorregut: {:.2f}".format(fps.elapsed()))
+print("[INFO] mitjana FPS: {:.2f}".format(fps.fps()))
 
-# do a bit of cleanup
+# clean 
 cv2.destroyAllWindows()
 vs.stop()
-
-print("Persones detectadas: ")
-for  names in confirmed_detections["Nom"]:
-	print(names)

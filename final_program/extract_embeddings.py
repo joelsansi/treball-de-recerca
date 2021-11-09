@@ -6,45 +6,44 @@ import pickle
 import cv2
 import os
 
-# construct the argument parser and parse the arguments
+# arguments
 args = {'dataset': 'dataset', #data folder name
 'embeddings': 'output/embeddings.pickle', 
 'detector': 'face_detection_model', 
 'embedding_model': 'openface_nn4.small2.v1.t7', 
 'confidence': 0.5}
 
-# load our serialized face detector from disk
+# load model from disk
 print("[INFO] loading face detector...")
 protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
 modelPath = os.path.sep.join([args["detector"],
 	"res10_300x300_ssd_iter_140000.caffemodel"])
 detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 
-# load our serialized face embedding model from disk
+# load face embedding model
 print("[INFO] loading face recognizer...")
 embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
 
-# grab the paths to the input images in our dataset
+# grab paths from dataset images
 print("[INFO] quantifying faces...")
 imagePaths = list(paths.list_images(args["dataset"]))
 
-# initialize our lists of extracted facial embeddings and
-# corresponding people names
+# inizialize list of known embeddings and known names
 knownEmbeddings = []
 knownNames = []
 
-# initialize the total number of faces processed
+# total amount of faces processed
 total = 0
 
 # loop over the image paths
 for (i, imagePath) in enumerate(imagePaths):
 	# extract the person name from the image path
-	print("[INFO] processing image {}/{}".format(i + 1,
+	print("[INFO] procesant imatge {}/{}".format(i + 1,
 		len(imagePaths)))
 	name = imagePath.split(os.path.sep)[-2]
 
-	# load the image, resize it to have a width of 600 pixels (while
-	# maintaining the aspect ratio), and then grab the image
+	# load the image, resize it to have a width of 600 pixels
+	# (maintaining the aspect ratio), and then grab the image
 	# dimensions
 	image = cv2.imread(imagePath)
 	image = imutils.resize(image, width=600)
@@ -99,7 +98,7 @@ for (i, imagePath) in enumerate(imagePaths):
 			total += 1
 
 # dump the facial embeddings + names to disk
-print("[INFO] serializing {} encodings...".format(total))
+print("[INFO] ordenant {} embeddings...".format(total))
 data = {"embeddings": knownEmbeddings, "names": knownNames}
 f = open(args["embeddings"], "wb")
 f.write(pickle.dumps(data))
